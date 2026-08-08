@@ -19,11 +19,14 @@ void setup() {
 
     // 1. Initialize Serial Interfaces
     Serial.begin(115200); // USB Monitor
-    delay(1000); // Wait for USB Serial to be ready
-    Serial1.begin(115200, SERIAL_8N1, RX_PIN, TX_PIN); // RX on 44, TX on 43
+    while(!Serial && millis() < 3000) { delay(10); } // Wait up to 3s for USB Serial
+    delay(500); // Additional stabilization
+    Serial1.begin(115200, SERIAL_8N1, RX_PIN, TX_PIN); // RX on 45, TX on 21
     
+    Serial.println("\n\n========================================");
     Serial.println("SOLDIER: Booting...");
     Serial.printf("SOLDIER: RX Pin: %d, TX Pin: %d\n", RX_PIN, TX_PIN);
+    Serial.println("========================================");
 
     // 2. Handshake Loop: Wait for Commander (Lonely Binary) signal
     Serial.println("SOLDIER: Waiting for Commander's READY_QUERY...");
@@ -81,7 +84,7 @@ void loop() {
         cmd.trim();
         
         if (cmd.indexOf("SWEEP_START") != -1) {
-            Serial.println("SOLDIER: SWEEP_START received - Executing BLE Burst on Ch 37, 38, 39");
+            Serial.println("SOLDIER: >>> SWEEP_START - BLE BURST ACTIVE <<<");
             
             // Purple flash = Jamming active
             statusLED.setPixelColor(0, statusLED.Color(255, 0, 255));
